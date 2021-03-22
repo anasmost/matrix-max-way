@@ -1,10 +1,7 @@
 module.exports = entireMaxWay_iter;
-// All object assignement are made by refs, only if cloning is an absolute necessity
-/* (start_i, start_j) and (end_i, end_j) are respectively the coordinates of the starting and ending cell.
-The returned objected contain the sequence on the seq property.
-The sequence doesn't include the starting cell. */
+// All object assignement are made by refs, only if cloning is necessary
+// This Function takes in a matrix (+ its dimension to avoid recalculation) and returns an object (way model) with the sequence and the score properties
 function entireMaxWay_iter(matrix, matrix_dimension) {
-  const n = matrix_dimension;
   const min_d = 0;
   const max_d = matrix_dimension - 1;
   // maxWays is an array of best scored ways from the starting cell of the matrix to the current diagonale divider's cells
@@ -13,15 +10,14 @@ function entireMaxWay_iter(matrix, matrix_dimension) {
   for (let d = min_d; d < max_d; d++) {
     _1stHalfForwardStep(d);
   }
-  // for (let d = max_d; d > min_d; d--) {
-  //   _2ndHalfForwardStep(d);
-  // }
   for (let d = min_d; d < max_d; d++) {
-    _2ndHalfForwardStep__(d);
+    _2ndHalfForwardStep(d);
   }
 
   // maxWays is an array contents of which eventually resolves into a single best scored maxWay
   return maxWays[0];
+
+  /* The remaining body of this function consists of function statements */
 
   // returns the best scored among the arguments
   function maxOf(way1, way2) {
@@ -60,20 +56,7 @@ function entireMaxWay_iter(matrix, matrix_dimension) {
     // Extending the first maxWay (because the loop above doesn't do it)
     extendWay(maxWays[0], matrix[0][d + 1]);
   }
-  // 
   function _2ndHalfForwardStep(d) {
-    for (let i = matrix_dimension - 1 - d, idx = 0, prevMaxWay; i < matrix_dimension - 1; i++, idx++) {
-      let maxWay = maxOf(maxWays[idx], maxWays[idx + 1]);
-      if (maxWay === maxWays[idx - 1]) maxWay = cloneWay(maxWay);
-      maxWays[idx] = maxWay;
-      extendWay(prevMaxWay, matrix[i][2 * matrix_dimension - 1 - d - i]);
-      prevMaxWay = maxWay;
-    }
-    extendWay(maxWays[d - 1], matrix[matrix_dimension - 1][matrix_dimension - d]);
-    // All the neccessary d-1 maxways are placed above the last element, thus this one has to be deleted
-    maxWays.pop();
-  }
-  function _2ndHalfForwardStep__(d) {
     for (let i = d, w = 0, prevMaxWay; i < matrix_dimension - 1; i++, w++) {
       let maxWay = maxOf(maxWays[w], maxWays[w + 1]);
       if (maxWay === maxWays[w - 1]) maxWay = cloneWay(maxWay);
@@ -86,4 +69,3 @@ function entireMaxWay_iter(matrix, matrix_dimension) {
     maxWays.pop();
   }
 }
-
